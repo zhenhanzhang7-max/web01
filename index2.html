@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>中华美食 · 舌尖上的中国</title>
+  <style>
+    /* ===== 全局重置 ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background: #fdf6ec;
+      color: #2d1a0e;
+      line-height: 1.7;
+    }
+
+    /* ===== 自定义属性 ===== */
+    :root {
+      --red:    #c0392b;
+      --dark-red: #922b21;
+      --gold:   #d4a017;
+      --light-gold: #f5e6c8;
+      --cream:  #fdf6ec;
+      --ink:    #2d1a0e;
+      --shadow: 0 8px 32px rgba(192,57,43,.18);
+    }
+
+    /* ===== 导航栏 ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(20,5,3,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--gold);
+    }
+    .nav-logo {
+      font-size: 1.4rem; font-weight: 700; color: var(--gold);
+      letter-spacing: .15em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo span { font-size: 1.7rem; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: #f5e6c8; text-decoration: none; font-size: .95rem;
+      letter-spacing: .08em; transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ===== 英雄区 ===== */
+    .hero {
+      position: relative; height: 100vh; min-height: 600px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://sspark.genspark.ai/cfimages?u1=Bu4a8bgMGpKMTkUgyqGmtUoBtjbwMf4DPuJhb1qO%2Fjte%2FRAFtvpmvulDwLq9cguj8PT%2FfaHZ9uzvzYuX9LqevwiwjrlPGcYULBoF2GajYGSRk%2BxUm8uvNWQ%3D&u2=WVEIdTaDQUxuPTQx&width=2560')
+        center/cover no-repeat;
+      filter: brightness(.45) saturate(1.2);
+      transform: scale(1.04);
+      animation: zoomIn 18s ease-in-out infinite alternate;
+    }
+    @keyframes zoomIn { from { transform: scale(1.04); } to { transform: scale(1.12); } }
+    /* 斜线装饰遮罩 */
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(192,57,43,.35) 0%, transparent 60%, rgba(212,160,23,.25) 100%);
+    }
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; }
+    .hero-tag {
+      display: inline-block;
+      padding: 4px 18px; border-radius: 50px;
+      background: var(--gold); color: #2d1a0e;
+      font-size: .8rem; letter-spacing: .2em; font-weight: 600;
+      margin-bottom: 18px;
+      animation: fadeDown .9s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      font-weight: 900; color: #fff;
+      line-height: 1.1; letter-spacing: .06em;
+      text-shadow: 0 4px 24px rgba(0,0,0,.6);
+      animation: fadeDown 1.1s .15s ease both;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero p {
+      margin-top: 18px;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: rgba(255,255,255,.85);
+      max-width: 560px; margin-left: auto; margin-right: auto;
+      animation: fadeDown 1.1s .3s ease both;
+    }
+    .hero-btns {
+      margin-top: 36px; display: flex; gap: 16px; justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeDown 1.1s .45s ease both;
+    }
+    .btn {
+      padding: 13px 34px; border-radius: 50px;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: transform .22s, box-shadow .22s;
+      letter-spacing: .05em;
+    }
+    .btn-primary {
+      background: var(--red); color: #fff;
+      border: 2px solid var(--red);
+      box-shadow: 0 4px 20px rgba(192,57,43,.5);
+    }
+    .btn-outline {
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,.7);
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 滚动提示箭头 ===== */
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      z-index: 2; animation: bounce 2s infinite;
+      color: rgba(255,255,255,.7); font-size: 1.8rem; cursor: pointer;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(10px); }
+    }
+
+    /* ===== 通用 Section ===== */
+    section { padding: 90px 5%; }
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-tag {
+      display: inline-block; padding: 3px 16px; border-radius: 50px;
+      background: var(--light-gold); color: var(--dark-red);
+      font-size: .78rem; letter-spacing: .2em; font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 800; color: var(--ink);
+      position: relative; display: inline-block;
+    }
+    .section-title::after {
+      content: '';
+      display: block; width: 60%; height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--gold));
+      border-radius: 2px; margin: 10px auto 0;
+    }
+    .section-sub {
+      margin-top: 14px; font-size: 1rem;
+      color: #7a5c44; max-width: 540px; margin-left: auto; margin-right: auto;
+    }
+
+    /* ===== 特色菜 - 大卡片网格 ===== */
+    #dishes { background: #fff; }
+    .dishes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 32px;
+    }
+    .dish-card {
+      border-radius: 20px; overflow: hidden;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(192,57,43,.1);
+      transition: transform .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+    .dish-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 48px rgba(192,57,43,.22);
+    }
+    .dish-card-img {
+      width: 100%; height: 220px; object-fit: cover;
+      transition: transform .5s;
+    }
+    .dish-card:hover .dish-card-img { transform: scale(1.06); }
+    .dish-card-img-wrap { overflow: hidden; position: relative; }
+    .dish-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--red); color: #fff;
+      font-size: .7rem; padding: 4px 10px; border-radius: 50px;
+      font-weight: 700; letter-spacing: .1em;
+    }
+    .dish-card-body { padding: 20px 22px 24px; }
+    .dish-card-body h3 {
+      font-size: 1.2rem; font-weight: 700; color: var(--ink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dish-icon { font-size: 1.4rem; }
+    .dish-card-body p { margin-top: 8px; font-size: .9rem; color: #7a5c44; }
+    .dish-meta {
+      margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .tag {
+      padding: 3px 12px; border-radius: 50px;
+      font-size: .75rem; font-weight: 600;
+      background: var(--light-gold); color: var(--dark-red);
+    }
+    .tag-spicy { background: #fde8e8; color: var(--red); }
+    .tag-mild  { background: #e8f5e9; color: #2e7d32; }
+    .tag-sweet { background: #fff3e0; color: #e65100; }
+
+    /* ===== 地域美食带 ===== */
+    #regions { background: var(--cream); }
+    .regions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .region-card {
+      border-radius: 16px; overflow: hidden;
+      background: linear-gradient(135deg, var(--red), var(--dark-red));
+      color: #fff; padding: 32px 24px;
+      position: relative; cursor: pointer;
+      transition: transform .3s, box-shadow .3s;
+      box-shadow: 0 4px 20px rgba(192,57,43,.25);
+    }
+    .region-card:nth-child(2n) {
+      background: linear-gradient(135deg, #7b341e, #5c1a05);
+    }
+    .region-card:nth-child(3n) {
+      background: linear-gradient(135deg, #8d6708, #6b4e00);
+    }
+    .region-card:nth-child(4n) {
+      background: linear-gradient(135deg, #1a4b2e, #0d3020);
+    }
+    .region-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,.3);
+    }
+    .region-card::before {
+      content: attr(data-char);
+      position: absolute; right: 16px; bottom: -10px;
+      font-size: 6rem; font-weight: 900; opacity: .12;
+      line-height: 1;
+    }
+    .region-icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .region-card h3 { font-size: 1.3rem; font-weight: 800; }
+    .region-card p { margin-top: 8px; font-size: .85rem; opacity: .88; }
+    .region-dishes {
+      margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .region-tag {
+      padding: 2px 10px; border-radius: 50px;
+      background: rgba(255,255,255,.2); font-size: .75rem;
+    }
+
+    /* ===== 美食故事横幅 ===== */
+    .story-banner {
+      margin: 0 5% 90px;
+      border-radius: 24px; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 420px;
+      box-shadow: 0 12px 48px rgba(192,57,43,.18);
+    }
+    .story-banner-img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .story-banner-text {
+      background: linear-gradient(135deg, #2d1a0e 0%, #5a2d1a 100%);
+      padding: 52px 48px;
+      display: flex; flex-direction: column; justify-content: center;
+      color: #fff;
+    }
+    .story-banner-text .section-tag { background: rgba(212,160,23,.25); color: var(--gold); }
+    .story-banner-text h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800; margin: 14px 0; line-height: 1.3;
+    }
+    .story-banner-text p { font-size: .95rem; opacity: .85; max-width: 380px; }
+    .story-stats {
+      margin-top: 32px; display: flex; gap: 32px;
+    }
+    .stat-item { text-align: left; }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 900;
+      color: var(--gold); line-height: 1;
+    }
+    .stat-label { font-size: .82rem; opacity: .75; margin-top: 4px; }
+
+    /* ===== 八大菜系时间轴 ===== */
+    #eight { background: #fff; }
+    .cuisines-timeline {
+      max-width: 860px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .cuisine-item {
+      display: grid; grid-template-columns: 100px 1fr;
+      gap: 0 28px; position: relative;
+      padding-bottom: 40px;
+    }
+    .cuisine-item:last-child { padding-bottom: 0; }
+    .cuisine-item::before {
+      content: '';
+      position: absolute; left: 49px; top: 52px; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    .cuisine-item:last-child::before { display: none; }
+    .cuisine-num {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--dark-red));
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #fff; flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(192,57,43,.35);
+    }
+    .cuisine-num .num { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+    .cuisine-num .zh  { font-size: .75rem; opacity: .85; }
+    .cuisine-body { padding-top: 16px; }
+    .cuisine-body h3 {
+      font-size: 1.25rem; font-weight: 800; color: var(--ink);
+    }
+    .cuisine-body p { font-size: .9rem; color: #7a5c44; margin-top: 6px; }
+    .cuisine-tags { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ===== Gallery ===== */
+    #gallery { background: var(--cream); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto;
+      gap: 16px;
+    }
+    .gallery-item {
+      border-radius: 16px; overflow: hidden;
+      position: relative; cursor: pointer;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .5s;
+      display: block;
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-item:nth-child(1) { grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-column: span 2; }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 50%);
+      display: flex; align-items: flex-end; padding: 18px;
+      opacity: 0; transition: opacity .3s;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span {
+      color: #fff; font-weight: 700; font-size: 1rem;
+    }
+
+    /* ===== 底部 ===== */
+    footer {
+      background: #1a0a04;
+      color: rgba(255,255,255,.6);
+      text-align: center; padding: 48px 5%;
+    }
+    footer .footer-logo {
+      font-size: 1.8rem; font-weight: 900;
+      color: var(--gold); letter-spacing: .15em;
+      margin-bottom: 12px;
+    }
+    footer p { font-size: .88rem; }
+    footer .footer-links {
+      display: flex; justify-content: center; gap: 24px;
+      margin: 20px 0; list-style: none;
+    }
+    footer .footer-links a {
+      color: rgba(255,255,255,.55); text-decoration: none;
+      font-size: .85rem; transition: color .2s;
+    }
+    footer .footer-links a:hover { color: var(--gold); }
+    .footer-divider {
+      width: 60px; height: 2px;
+      background: var(--gold); margin: 20px auto;
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 768px) {
+      .story-banner { grid-template-columns: 1fr; }
+      .story-banner-img { height: 260px; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item:nth-child(1) { grid-row: unset; }
+      .gallery-item:nth-child(4) { grid-column: unset; }
+      .nav-links { display: none; }
+      .story-stats { gap: 20px; }
+    }
+    @media (max-width: 480px) {
+      section { padding: 64px 4%; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .story-banner-text { padding: 32px 24px; }
+    }
+
+    /* ===== 滚动动画 ===== */
+    .reveal {
+      opacity: 0; transform: translateY(36px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== 装饰分隔符 ===== */
+    .divider {
+      text-align: center; margin: 0; padding: 20px 0;
+      font-size: 1.4rem; color: var(--gold); letter-spacing: .4em;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======= 导航 ======= -->
+<nav>
+  <div class="nav-logo"><span>🍜</span> 中华美食</div>
+  <ul class="nav-links">
+    <li><a href="#dishes">特色菜肴</a></li>
+    <li><a href="#regions">地域美食</a></li>
+    <li><a href="#eight">八大菜系</a></li>
+    <li><a href="#gallery">美食图鉴</a></li>
+  </ul>
+</nav>
+
+<!-- ======= 英雄区 ======= -->
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🇨🇳 CHINESE CUISINE</div>
+    <h1>舌尖上的<em>中国</em></h1>
+    <p>五千年饮食文化，八大菜系风味，带您领略最正宗的中华美食世界</p>
+    <div class="hero-btns">
+      <a href="#dishes" class="btn btn-primary">探索美食 →</a>
+      <a href="#eight" class="btn btn-outline">八大菜系</a>
+    </div>
+  </div>
+  <div class="scroll-hint" onclick="document.getElementById('dishes').scrollIntoView({behavior:'smooth'})">↓</div>
+</header>
+
+<!-- ======= 特色菜肴 ======= -->
+<section id="dishes">
+  <div class="section-header reveal">
+    <div class="section-tag">FEATURED DISHES</div>
+    <h2 class="section-title">经典特色菜肴</h2>
+    <p class="section-sub">精选中华饮食文化中最具代表性的传统名菜，每一道都承载着深厚的历史与独特的地方风情</p>
+  </div>
+
+  <div class="dishes-grid">
+
+    <!-- 北京烤鸭 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=oZfjIL8UxYULqIJZ9SHXQYZ37Lq4%2FRLBvY9lUbn7NEG5Q6UJOMVjrZgBTzIrwHqGUxiR9xiKBSlxwohZA4tW8ZcvJQfOLrKlY%2BOP2Wz1ZAwFHJJR5hSp9CoFBR%2BKnkO%2FL07NqxrMg0NzjpRb6vZzrLJxNGkWCAxgbipQXyngrboavXad49uy25J4A6ugc71C&u2=X313ZDfcL81BldMn&width=2560"
+          alt="北京烤鸭">
+        <span class="dish-badge">国宴名菜</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🦆</span> 北京烤鸭</h3>
+        <p>皮脆肉嫩、色泽红润，搭配薄饼与甜面酱，是中华美食的顶级名片，享誉世界数百年。</p>
+        <div class="dish-meta">
+          <span class="tag">北京菜</span>
+          <span class="tag tag-mild">口味温和</span>
+          <span class="tag">明朝宫廷</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 麻辣火锅 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=mirPkFwypfQK%2FBkp7oa9IYJ5tyaCpBbzilKisMTVOFWqBpIqKXphO%2BlFe7uEx8PJEa6%2FG947X24rA%2F4HCleGlu7IZx0DHJx5TsJO0BjTXjy3IxyCU3Pg1XKV4MD%2F1na6Fdxg4fft%2FdBv%2FfWxYkBuZx384cJG&u2=iHP1ofEKq8KNr8Cq&width=2560"
+          alt="麻辣火锅">
+        <span class="dish-badge">最受欢迎</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🫕</span> 麻辣火锅</h3>
+        <p>重庆火锅以其麻辣鲜香征服天下，红汤翻滚、百味涌现，是冬日聚餐的最佳选择。</p>
+        <div class="dish-meta">
+          <span class="tag">川菜</span>
+          <span class="tag tag-spicy">重辣🌶️🌶️🌶️</span>
+          <span class="tag">重庆发源</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 饺子 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=eKtMAfBzS5g%2BhkelBcNFhRlLHlHWeAyP5kijBT9QBP0JjErYIhMDf4bDtzvlCaA7Ci8QrN%2FdKTQzx4Yg%2BuOnMMSwMPph9ZxDogFfgd6ddwfQJosEjCw77B5RAFarAHAhNF5QhpacSNK%2Fx553wyg%2B%2BcsnNAjRxuest96ffka6%2FZoGrayEIXOW0%2F%2FmCbfMa8x4%2B93RBLrnxusB%2BNKbOx1rCAtlaLFSfY0Ex3S1CFZn5COrnn9tMvdCXo%2BYCzeo1r%2FAtHFTQHnGT%2Blu04lOTNT4DzvJdO5h2G%2FiaSkxpBwc%2BXj3djbZKIv9IRcTcoOhuAZQ79jASHpR2JEis0yvhpeOr4JEgJ9NReRp15WReykpKAOfe6AiN48vLJ3xIsl1tMsUTOeksTDu6emYgWddryBGAGdyoMaGUbyqG%2BVJUIfZiXuTC2fBziej1dOM6s2OUG5M2LWzcIbZ0mbiflMwtBkvGF6RG4f7nzdS93rpuQ%3D%3D&u2=SshvTBUcQ%2FX7gWwH&width=2560"
+          alt="饺子">
+        <span class="dish-badge">传统节日</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🥟</span> 饺 子</h3>
+        <p>中国北方传统面食，皮薄馅鲜，寓意吉祥。春节包饺子是延续千年的家庭文化仪式。</p>
+        <div class="dish-meta">
+          <span class="tag">北方菜系</span>
+          <span class="tag tag-mild">口味清鲜</span>
+          <span class="tag">年节必备</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 宫保鸡丁 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=w1%2Bg2q%2BNJeB9e2VC4mIdx7Fxkr69VK712vK72zPaCdAsksBbSa%2BsreebIwbtouqKi5WPI6kEguyiRqBDMa19TdYrPs6%2Fi9jmHAaHVsbO0bYIloW9ketKVk4%3D&u2=MnIkc%2FK9tyfqItgB&width=2560"
+          alt="宫保鸡丁">
+        <span class="dish-badge">全球知名</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🍗</span> 宫保鸡丁</h3>
+        <p>川菜经典，鸡丁嫩滑、花生香脆、辣椒麻辣，酸甜咸辣层次分明，风靡全球百余年。</p>
+        <div class="dish-meta">
+          <span class="tag">川菜</span>
+          <span class="tag tag-spicy">微辣🌶️🌶️</span>
+          <span class="tag">清朝名菜</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 小笼包 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=S16QLaid9j6R0xRisKP7TyPA1qiSUKD2uv196KVzntMqDqwG7zxjrf2c1Dd2ECIOXHKrRKNJyPUUsE24WdhatIB%2B1AF1iJPJki1KiBP9sWfGmP4AKs5%2Fzy3iKC5y&u2=ckmBnE90FVs6TPNW&width=2560"
+          alt="小笼包">
+        <span class="dish-badge">江南精致</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🥢</span> 小笼包 & 包子</h3>
+        <p>薄皮之内汤汁饱满，一口咬下满溢鲜甜。上海、苏州等地的小笼包已成中华美食符号。</p>
+        <div class="dish-meta">
+          <span class="tag">沪苏菜系</span>
+          <span class="tag tag-sweet">口味鲜甜</span>
+          <span class="tag">早茶必选</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 传统菜肴 -->
+    <div class="dish-card reveal">
+      <div class="dish-card-img-wrap">
+        <img class="dish-card-img"
+          src="https://sspark.genspark.ai/cfimages?u1=oq0dWMlYv3JhsXY6guYPAPBpw5yFBctkKPFQq%2BpY5c6PJL3%2Bn4%2FAdlLBE%2BKBIam1nHZHBnYn0sZUs2DiCAEIUsX6iG4%3D&u2=klHdcATPoZQNnFhD&width=2560"
+          alt="传统中国菜">
+        <span class="dish-badge">文化瑰宝</span>
+      </div>
+      <div class="dish-card-body">
+        <h3><span class="dish-icon">🍲</span> 传统名菜</h3>
+        <p>中国各地传统名菜汇聚一堂，色香味俱全，每一道菜都是地方文化与历史的生动呈现。</p>
+        <div class="dish-meta">
+          <span class="tag">全国各地</span>
+          <span class="tag tag-mild">百味兼备</span>
+          <span class="tag">非遗传承</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider">❧ · · ❧ · · ❧</div>
+
+<!-- ======= 美食故事横幅 ======= -->
+<div class="story-banner reveal">
+  <img class="story-banner-img"
+    src="https://sspark.genspark.ai/cfimages?u1=%2B9LIxtth6tSz0oOZQ4J2WgnlCS2QAO8jmGaOlkonzg5O3JgGvDHDFz6eyXyOv8YZmOuBfVXol14oENO%2BBsIp3GMoxhFr9nUl2kjoeAyNYSd9IkGgR5qUQkm4z8ICmZ%2Bbj42Gxx0LXkAPUVTkC5euNcA6oFkDx4ZROtIhM0EjJSvdYu7DlAY%2FaQ%3D%3D&u2=z5crUna%2Bagh1ILLK&width=2560"
+    alt="中国火锅文化">
+  <div class="story-banner-text">
+    <div class="section-tag">STORY · 美食故事</div>
+    <h2>五千年的<br>饮食智慧</h2>
+    <p>中华饮食文化是人类文明史上最悠久、最丰富的饮食体系之一，融合了儒家礼仪、道家养生、阴阳五行等哲学思想，形成了独一无二的饮食美学。</p>
+    <div class="story-stats">
+      <div class="stat-item">
+        <div class="stat-num">8</div>
+        <div class="stat-label">大菜系</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5000+</div>
+        <div class="stat-label">年饮食历史</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">34</div>
+        <div class="stat-label">省份特色</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= 地域美食 ======= -->
+<section id="regions">
+  <div class="section-header reveal">
+    <div class="section-tag">REGIONAL FOOD</div>
+    <h2 class="section-title">地域饮食风情</h2>
+    <p class="section-sub">中国幅员辽阔，南北口味迥异，东西风味各有千秋，每个地区都拥有令人垂涎的独特美食</p>
+  </div>
+  <div class="regions-grid">
+    <div class="region-card reveal" data-char="川">
+      <div class="region-icon">🌶️</div>
+      <h3>四川 · 重庆</h3>
+      <p>麻辣鲜香，以麻辣著称，火锅、回锅肉、夫妻肺片令人欲罢不能</p>
+      <div class="region-dishes">
+        <span class="region-tag">麻婆豆腐</span>
+        <span class="region-tag">火锅</span>
+        <span class="region-tag">夫妻肺片</span>
+      </div>
+    </div>
+    <div class="region-card reveal" data-char="粤">
+      <div class="region-icon">🍵</div>
+      <h3>广东 · 香港</h3>
+      <p>清淡鲜甜，早茶文化盛行，广式点心精巧，烧腊烤鸭色泽诱人</p>
+      <div class="region-dishes">
+        <span class="region-tag">早茶点心</span>
+        <span class="region-tag">白切鸡</span>
+        <span class="region-tag">叉烧</span>
+      </div>
+    </div>
+    <div class="region-card reveal" data-char="京">
+      <div class="region-icon">🦆</div>
+      <h3>北京 · 华北</h3>
+      <p>皇城御膳底蕴深厚，烤鸭、涮羊肉是京城饮食文化的精髓代表</p>
+      <div class="region-dishes">
+        <span class="region-tag">北京烤鸭</span>
+        <span class="region-tag">涮羊肉</span>
+        <span class="region-tag">炸酱面</span>
+      </div>
+    </div>
+    <div class="region-card reveal" data-char="苏">
+      <div class="region-icon">🌸</div>
+      <h3>江浙 · 沪</h3>
+      <p>精致细腻，甜鲜为主，苏州园林孕育了风雅的江南饮食文化</p>
+      <div class="region-dishes">
+        <span class="region-tag">小笼包</span>
+        <span class="region-tag">狮子头</span>
+        <span class="region-tag">蟹黄面</span>
+      </div>
+    </div>
+    <div class="region-card reveal" data-char="湘">
+      <div class="region-icon">🫙</div>
+      <h3>湖南 · 湖北</h3>
+      <p>辛辣咸香，湘菜以香辣闻名，毛氏红烧肉更是一道国民经典</p>
+      <div class="region-dishes">
+        <span class="region-tag">剁椒鱼头</span>
+        <span class="region-tag">红烧肉</span>
+        <span class="region-tag">辣椒炒肉</span>
+      </div>
+    </div>
+    <div class="region-card reveal" data-char="闽">
+      <div class="region-icon">🍜</div>
+      <h3>福建 · 台湾</h3>
+      <p>海鲜丰富，清淡鲜甜，佛跳墙是闽菜顶级名菜，牛肉面风靡宝岛</p>
+      <div class="region-dishes">
+        <span class="region-tag">佛跳墙</span>
+        <span class="region-tag">沙茶面</span>
+        <span class="region-tag">润饼</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= 八大菜系 ======= -->
+<section id="eight">
+  <div class="section-header reveal">
+    <div class="section-tag">EIGHT GREAT CUISINES</div>
+    <h2 class="section-title">中国八大菜系</h2>
+    <p class="section-sub">中国烹饪历史悠久，逐渐形成了以下八大菜系，各具特色，共同构成中华美食的壮丽版图</p>
+  </div>
+  <div class="cuisines-timeline">
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">川</span><span class="zh">四川菜</span></div>
+      <div class="cuisine-body">
+        <h3>川菜 — 百菜百味，一菜一格</h3>
+        <p>以麻、辣、鲜、香著称，善用花椒和辣椒，包含水煮、干煸、红烧等多种技法，是中国最有影响力的菜系之一。</p>
+        <div class="cuisine-tags">
+          <span class="tag tag-spicy">麻辣</span><span class="tag">宫保鸡丁</span><span class="tag">麻婆豆腐</span><span class="tag">回锅肉</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">粤</span><span class="zh">广东菜</span></div>
+      <div class="cuisine-body">
+        <h3>粤菜 — 食在广州，味在天下</h3>
+        <p>强调原汁原味、清淡鲜甜，以蒸、炒、煲为主，海鲜菜肴极为丰富，广式早茶文化更独步天下。</p>
+        <div class="cuisine-tags">
+          <span class="tag tag-mild">清淡</span><span class="tag">白切鸡</span><span class="tag">虾饺</span><span class="tag">叉烧</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">鲁</span><span class="zh">山东菜</span></div>
+      <div class="cuisine-body">
+        <h3>鲁菜 — 北方菜系之首</h3>
+        <p>鲁菜是中国历史最悠久的菜系，以咸鲜为主，注重火候与刀工，糖醋黄河鲤鱼是代表名菜。</p>
+        <div class="cuisine-tags">
+          <span class="tag">咸鲜</span><span class="tag">葱烧海参</span><span class="tag">九转大肠</span><span class="tag">糖醋鲤鱼</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">苏</span><span class="zh">江苏菜</span></div>
+      <div class="cuisine-body">
+        <h3>苏菜 — 精巧细腻，甜鲜并重</h3>
+        <p>以清鲜见长，注重刀工与造型，讲究原味，软糯甜鲜，"不时不食"是苏菜的核心理念。</p>
+        <div class="cuisine-tags">
+          <span class="tag tag-sweet">甜鲜</span><span class="tag">狮子头</span><span class="tag">松鼠鳜鱼</span><span class="tag">大煮干丝</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">浙</span><span class="zh">浙江菜</span></div>
+      <div class="cuisine-body">
+        <h3>浙菜 — 鲜嫩软滑，清爽不腻</h3>
+        <p>取材讲究新鲜，刀工精细，口味鲜嫩清爽。东坡肉与西湖醋鱼并列浙菜双璧。</p>
+        <div class="cuisine-tags">
+          <span class="tag">清爽</span><span class="tag">东坡肉</span><span class="tag">西湖醋鱼</span><span class="tag">龙井虾仁</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">闽</span><span class="zh">福建菜</span></div>
+      <div class="cuisine-body">
+        <h3>闽菜 — 汤菜为重，山珍海味</h3>
+        <p>以汤菜著称，善用红糟，口味偏甜鲜，佛跳墙集山珍海味于一锅，被誉为闽菜巅峰之作。</p>
+        <div class="cuisine-tags">
+          <span class="tag">汤鲜</span><span class="tag">佛跳墙</span><span class="tag">闽南沙茶</span><span class="tag">太极芋泥</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">湘</span><span class="zh">湖南菜</span></div>
+      <div class="cuisine-body">
+        <h3>湘菜 — 香辣为魂，烟熏醇厚</h3>
+        <p>以香辣为主，口味浓厚，剁椒鱼头鲜辣诱人，毛氏红烧肉更是家喻户晓的国民菜肴。</p>
+        <div class="cuisine-tags">
+          <span class="tag tag-spicy">香辣</span><span class="tag">剁椒鱼头</span><span class="tag">毛氏红烧肉</span><span class="tag">辣椒炒肉</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-item reveal">
+      <div class="cuisine-num"><span class="num">徽</span><span class="zh">安徽菜</span></div>
+      <div class="cuisine-body">
+        <h3>徽菜 — 山珍野味，重油重色</h3>
+        <p>徽菜善用山珍野味，以红烧、烟熏技法为主，臭鳜鱼虽名奇特，却是外焦里嫩的美味传奇。</p>
+        <div class="cuisine-tags">
+          <span class="tag">咸鲜</span><span class="tag">臭鳜鱼</span><span class="tag">毛豆腐</span><span class="tag">火腿炖甲鱼</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider">✦ · · ✦ · · ✦</div>
+
+<!-- ======= 美食图鉴 ======= -->
+<section id="gallery">
+  <div class="section-header reveal">
+    <div class="section-tag">GALLERY</div>
+    <h2 class="section-title">美食图鉴</h2>
+    <p class="section-sub">用镜头记录舌尖上的中国，每一帧都是食欲与艺术的完美交融</p>
+  </div>
+  <div class="gallery-grid reveal">
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=Bu4a8bgMGpKMTkUgyqGmtUoBtjbwMf4DPuJhb1qO%2Fjte%2FRAFtvpmvulDwLq9cguj8PT%2FfaHZ9uzvzYuX9LqevwiwjrlPGcYULBoF2GajYGSRk%2BxUm8uvNWQ%3D&u2=WVEIdTaDQUxuPTQx&width=2560" alt="传统美食地图">
+      <div class="gallery-overlay"><span>🗺️ 中华美食地图</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=oZfjIL8UxYULqIJZ9SHXQYZ37Lq4%2FRLBvY9lUbn7NEG5Q6UJOMVjrZgBTzIrwHqGUxiR9xiKBSlxwohZA4tW8ZcvJQfOLrKlY%2BOP2Wz1ZAwFHJJR5hSp9CoFBR%2BKnkO%2FL07NqxrMg0NzjpRb6vZzrLJxNGkWCAxgbipQXyngrboavXad49uy25J4A6ugc71C&u2=X313ZDfcL81BldMn&width=2560" alt="北京烤鸭">
+      <div class="gallery-overlay"><span>🦆 北京烤鸭</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=w1%2Bg2q%2BNJeB9e2VC4mIdx7Fxkr69VK712vK72zPaCdAsksBbSa%2BsreebIwbtouqKi5WPI6kEguyiRqBDMa19TdYrPs6%2Fi9jmHAaHVsbO0bYIloW9ketKVk4%3D&u2=MnIkc%2FK9tyfqItgB&width=2560" alt="宫保鸡丁">
+      <div class="gallery-overlay"><span>🍗 宫保鸡丁</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=%2B9LIxtth6tSz0oOZQ4J2WgnlCS2QAO8jmGaOlkonzg5O3JgGvDHDFz6eyXyOv8YZmOuBfVXol14oENO%2BBsIp3GMoxhFr9nUl2kjoeAyNYSd9IkGgR5qUQkm4z8ICmZ%2Bbj42Gxx0LXkAPUVTkC5euNcA6oFkDx4ZROtIhM0EjJSvdYu7DlAY%2FaQ%3D%3D&u2=z5crUna%2Bagh1ILLK&width=2560" alt="火锅文化">
+      <div class="gallery-overlay"><span>🫕 重庆火锅</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=eKtMAfBzS5g%2BhkelBcNFhRlLHlHWeAyP5kijBT9QBP0JjErYIhMDf4bDtzvlCaA7Ci8QrN%2FdKTQzx4Yg%2BuOnMMSwMPph9ZxDogFfgd6ddwfQJosEjCw77B5RAFarAHAhNF5QhpacSNK%2Fx553wyg%2B%2BcsnNAjRxuest96ffka6%2FZoGrayEIXOW0%2F%2FmCbfMa8x4%2B93RBLrnxusB%2BNKbOx1rCAtlaLFSfY0Ex3S1CFZn5COrnn9tMvdCXo%2BYCzeo1r%2FAtHFTQHnGT%2Blu04lOTNT4DzvJdO5h2G%2FiaSkxpBwc%2BXj3djbZKIv9IRcTcoOhuAZQ79jASHpR2JEis0yvhpeOr4JEgJ9NReRp15WReykpKAOfe6AiN48vLJ3xIsl1tMsUTOeksTDu6emYgWddryBGAGdyoMaGUbyqG%2BVJUIfZiXuTC2fBziej1dOM6s2OUG5M2LWzcIbZ0mbiflMwtBkvGF6RG4f7nzdS93rpuQ%3D%3D&u2=SshvTBUcQ%2FX7gWwH&width=2560" alt="饺子">
+      <div class="gallery-overlay"><span>🥟 传统饺子</span></div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://sspark.genspark.ai/cfimages?u1=S16QLaid9j6R0xRisKP7TyPA1qiSUKD2uv196KVzntMqDqwG7zxjrf2c1Dd2ECIOXHKrRKNJyPUUsE24WdhatIB%2B1AF1iJPJki1KiBP9sWfGmP4AKs5%2Fzy3iKC5y&u2=ckmBnE90FVs6TPNW&width=2560" alt="包子">
+      <div class="gallery-overlay"><span>🥢 江南点心</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= 页脚 ======= -->
+<footer>
+  <div class="footer-logo">🍜 中华美食</div>
+  <ul class="footer-links">
+    <li><a href="#dishes">特色菜肴</a></li>
+    <li><a href="#regions">地域风情</a></li>
+    <li><a href="#eight">八大菜系</a></li>
+    <li><a href="#gallery">美食图鉴</a></li>
+  </ul>
+  <div class="footer-divider"></div>
+  <p>© 2025 中华美食 · 舌尖上的中国 &nbsp;|&nbsp; 传承千年饮食文化之美</p>
+</footer>
+
+<script>
+  // 滚动显示动画
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // 导航栏滚动变色
+  window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    nav.style.background = window.scrollY > 60
+      ? 'rgba(20,5,3,0.97)'
+      : 'rgba(20,5,3,0.85)';
+  });
+</script>
+</body>
+</html>
